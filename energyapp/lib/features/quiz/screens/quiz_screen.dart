@@ -266,7 +266,7 @@ class _QuizScreenState extends State<QuizScreen> {
       ),
 
       // ⭐ THIS MUST BE INSIDE THE SCAFFOLD!
-      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 2),
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 1),
     );
   }
 

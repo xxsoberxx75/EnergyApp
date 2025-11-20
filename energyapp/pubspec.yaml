@@ -31,17 +31,10 @@ dependencies:
   flutter:
     sdk: flutter
   fl_chart: ^0.66.2
-  google_maps_flutter: ^2.3.0
-  youtube_player_iframe: ^4.0.4
-  # Firebase
-
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  flutter_map: ^7.0.0
-  latlong2: ^0.9.0
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

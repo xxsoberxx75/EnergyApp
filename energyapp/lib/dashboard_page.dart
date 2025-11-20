@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/custom_bottom_navbar.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -21,190 +19,130 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
         appBar: AppBar(
-          backgroundColor: const Color.fromRGBO(10, 65, 116, 1),
-          title: const Text(
-            "Dashboard",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
+          title: const Text("Dashboard"),
           bottom: const TabBar(
             labelColor: Colors.white,
-            unselectedLabelColor: Color.fromARGB(179, 255, 255, 255),
+            unselectedLabelColor: Colors.white70,
             tabs: [
               Tab(text: "Charts"),
               Tab(text: "Map"),
             ],
           ),
         ),
-
-        // ************* FULL PAGE SCROLL FIX HERE *************
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    if (constraints.maxWidth > 600) {
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: _buildCard(
-                              title: "Active Outages in Mauritius",
-                              value: "4",
-                              icon: Icons.flash_on,
-                              color: Colors.red,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildCard(
-                              title: "Regions Affected",
-                              value: "Port Louis, Moka",
-                              icon: Icons.location_on,
-                              color: Colors.orange,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildCard(
-                              title: "Safety Tip of the Day",
-                              value: "Unplug electronics during a blackout.",
-                              icon: Icons.health_and_safety,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Column(
-                        children: [
-                          _buildCard(
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth > 600) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: _buildCard(
                             title: "Active Outages",
                             value: "4",
                             icon: Icons.flash_on,
                             color: Colors.red,
                           ),
-                          const SizedBox(height: 10),
-                          _buildCard(
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildCard(
                             title: "Regions Affected",
                             value: "Port Louis, Moka",
                             icon: Icons.location_on,
                             color: Colors.orange,
                           ),
-                          const SizedBox(height: 10),
-                          _buildCard(
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildCard(
                             title: "Safety Tip of the Day",
                             value: "Unplug electronics during a blackout.",
                             icon: Icons.health_and_safety,
                             color: Colors.green,
                           ),
-                        ],
-                      );
-                    }
-                  },
-                ),
-              ),
-
-              // ************* TAB CONTENT IS NOW SCROLLABLE *************
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 1.5,
-                child: TabBarView(
-                  children: [
-                    // CHARTS TAB
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: [
-                          _buildLineChart(),
-                          const SizedBox(height: 16),
-                          _buildBarChart(),
-                          const SizedBox(height: 16),
-                          _buildPieChart(),
-                        ],
-                      ),
-                    ),
-
-                    // MAP TAB
-                    Center(
-                      child: Container(
-                        margin: const EdgeInsets.all(16),
-                        height: 800,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 6,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: FlutterMap(
-                            options: MapOptions(
-                              initialCenter: const LatLng(-20.1609, 57.5012),
-                              initialZoom: 10,
-                            ),
-                            children: [
-                              TileLayer(
-                                urlTemplate:
-                                    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                userAgentPackageName: "com.example.app",
-                              ),
-                              MarkerLayer(
-                                markers: [
-                                  Marker(
-                                    point: const LatLng(-20.1609, 57.5012),
-                                    width: 40,
-                                    height: 40,
-                                    child: const Icon(
-                                      Icons.location_on,
-                                      color: Colors.red,
-                                      size: 32,
-                                    ),
-                                  ),
-                                  Marker(
-                                    point: const LatLng(-20.2841, 57.5306),
-                                    width: 40,
-                                    height: 40,
-                                    child: const Icon(
-                                      Icons.location_on,
-                                      color: Colors.orange,
-                                      size: 32,
-                                    ),
-                                  ),
-                                  Marker(
-                                    point: const LatLng(-20.3206, 57.5167),
-                                    width: 40,
-                                    height: 40,
-                                    child: const Icon(
-                                      Icons.location_on,
-                                      color: Colors.green,
-                                      size: 32,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        _buildCard(
+                          title: "Active Outages",
+                          value: "4",
+                          icon: Icons.flash_on,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(height: 10),
+                        _buildCard(
+                          title: "Regions Affected",
+                          value: "Port Louis, Moka",
+                          icon: Icons.location_on,
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(height: 10),
+                        _buildCard(
+                          title: "Safety Tip of the Day",
+                          value: "Unplug electronics during a blackout.",
+                          icon: Icons.health_and_safety,
+                          color: Colors.green,
+                        ),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: [
+                        _buildLineChart(),
+                        const SizedBox(height: 16),
+                        _buildBarChart(),
+                        const SizedBox(height: 16),
+                        _buildPieChart(),
+                      ],
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.all(16),
+                      height: 350,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: Offset(0, 3),
                           ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "Mauritius Outage Map Placeholder\n(Add Google Maps / Flutter Map Here)",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-
-        bottomNavigationBar: const CustomBottomNavBar(currentIndex: 1),
+        bottomNavigationBar: const CustomBottomNavBar(currentIndex: 0),
       ),
     );
   }
-
-  // ------------------- UI COMPONENTS BELOW (unchanged) -------------------
 
   Widget _buildCard({
     required String title,
@@ -236,8 +174,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
-  // ------------------- CHARTS (unchanged) -------------------
 
   Widget _buildLineChart() {
     return Container(
@@ -309,6 +245,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       },
                     ),
                   ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
@@ -332,6 +274,21 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ),
                 ],
+                lineTouchData: LineTouchData(
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((spot) {
+                        return LineTooltipItem(
+                          '${spot.y.toInt()} outages',
+                          const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ),
               ),
             ),
           ),
@@ -372,6 +329,18 @@ class _DashboardPageState extends State<DashboardPage> {
                   },
                 ),
                 titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 30,
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: const TextStyle(fontSize: 12),
+                        );
+                      },
+                    ),
+                  ),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
@@ -398,33 +367,87 @@ class _DashboardPageState extends State<DashboardPage> {
                       },
                     ),
                   ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
+                borderData: FlBorderData(show: false),
                 barGroups: [
                   BarChartGroupData(
                     x: 0,
                     barRods: [
-                      BarChartRodData(toY: 8, color: Colors.orange, width: 20),
+                      BarChartRodData(
+                        toY: 8,
+                        color: Colors.orange,
+                        width: 20,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(4),
+                        ),
+                      ),
                     ],
                   ),
                   BarChartGroupData(
                     x: 1,
                     barRods: [
-                      BarChartRodData(toY: 6, color: Colors.blue, width: 20),
+                      BarChartRodData(
+                        toY: 6,
+                        color: Colors.blue,
+                        width: 20,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(4),
+                        ),
+                      ),
                     ],
                   ),
                   BarChartGroupData(
                     x: 2,
                     barRods: [
-                      BarChartRodData(toY: 10, color: Colors.green, width: 20),
+                      BarChartRodData(
+                        toY: 10,
+                        color: Colors.green,
+                        width: 20,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(4),
+                        ),
+                      ),
                     ],
                   ),
                   BarChartGroupData(
                     x: 3,
                     barRods: [
-                      BarChartRodData(toY: 4, color: Colors.purple, width: 20),
+                      BarChartRodData(
+                        toY: 4,
+                        color: Colors.purple,
+                        width: 20,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(4),
+                        ),
+                      ),
                     ],
                   ),
                 ],
+                barTouchData: BarTouchData(
+                  touchTooltipData: BarTouchTooltipData(
+                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                      const regions = [
+                        'Port Louis',
+                        'Moka',
+                        'Plaines Wilhems',
+                        'Curepipe',
+                      ];
+                      return BarTooltipItem(
+                        '${regions[group.x]}\n${rod.toY.toInt()} outages',
+                        const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ),
@@ -459,6 +482,22 @@ class _DashboardPageState extends State<DashboardPage> {
                   flex: 2,
                   child: PieChart(
                     PieChartData(
+                      pieTouchData: PieTouchData(
+                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                          setState(() {
+                            if (!event.isInterestedForInteractions ||
+                                pieTouchResponse == null ||
+                                pieTouchResponse.touchedSection == null) {
+                              touchedIndex = -1;
+                              return;
+                            }
+                            touchedIndex = pieTouchResponse
+                                .touchedSection!
+                                .touchedSectionIndex;
+                          });
+                        },
+                      ),
+                      sectionsSpace: 2,
                       centerSpaceRadius: 40,
                       sections: [
                         PieChartSectionData(
