@@ -5,6 +5,7 @@ import '../data/quiz_data.dart';
 import '../models/question.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/answer_option.dart';
+import '../../../kids_section.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -33,20 +34,28 @@ class _QuizScreenState extends State<QuizScreen> {
     _selectedCategory = _categories.first;
   }
 
+  // ⭐ Redirect to Kids View
+  void _goToKidsSection() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const KidsSectionScreen()),
+    );
+  }
+
   void _changeCategory(String category) {
-  setState(() {
-    _selectedCategory = category;
+    setState(() {
+      _selectedCategory = category;
 
-    // ⭐ SHUFFLE QUESTIONS ONLY
-    quizData[_selectedCategory] = [...quizData[_selectedCategory]!]..shuffle();
+      // Shuffle only the questions
+      quizData[_selectedCategory] = [...quizData[_selectedCategory]!]
+        ..shuffle();
 
-    _currentQuestionIndex = 0;
-    _selectedOptionIndex = -1;
-    _showResult = false;
-    _score = 0;
-  });
-}
-
+      _currentQuestionIndex = 0;
+      _selectedOptionIndex = -1;
+      _showResult = false;
+      _score = 0;
+    });
+  }
 
   void _selectOption(int index) {
     if (_showResult) return;
@@ -57,17 +66,14 @@ class _QuizScreenState extends State<QuizScreen> {
       _selectedOptionIndex = index;
       _showResult = true;
 
-      // Update score
       if (isCorrect) {
         _score++;
       }
 
-      // Trigger score flash animation
       _scoreFlash = true;
       _scoreFlashColor = isCorrect ? Colors.greenAccent : Colors.redAccent;
     });
 
-    // Remove flash after short delay
     Future.delayed(const Duration(milliseconds: 250), () {
       if (mounted) {
         setState(() {
@@ -79,6 +85,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _nextQuestion() {
     final isLast = _currentQuestionIndex == _questionsForCategory.length - 1;
+
     if (isLast) {
       _showScoreDialog();
     } else {
@@ -92,6 +99,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _showScoreDialog() {
     final total = _questionsForCategory.length;
+
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -109,7 +117,7 @@ class _QuizScreenState extends State<QuizScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _changeCategory(_selectedCategory); // restart
+              _changeCategory(_selectedCategory);
             },
             child: const Text(
               'Retry',
@@ -161,7 +169,6 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                     ),
 
-                    // ⭐ REPLACEMENT GOES HERE ↓↓↓
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
                       padding: const EdgeInsets.symmetric(
@@ -207,6 +214,35 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                     ),
                   ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // ⭐ Kids Section Button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton.icon(
+                    onPressed: _goToKidsSection,
+                    icon: const Icon(Icons.child_care, color: Colors.white),
+                    label: const Text(
+                      "Kids Section",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
                 ),
 
                 const SizedBox(height: 16),
@@ -270,7 +306,6 @@ class _QuizScreenState extends State<QuizScreen> {
         ),
       ),
 
-      // ⭐ THIS MUST BE INSIDE THE SCAFFOLD!
       bottomNavigationBar: const CustomBottomNavBar(currentIndex: 1),
     );
   }
@@ -291,14 +326,13 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ],
       ),
-
       child: SingleChildScrollView(
-        // ⭐ FIX HERE
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('⚡', style: TextStyle(fontSize: 30)),
             const SizedBox(height: 8),
+
             Text(
               _currentQuestion.question,
               textAlign: TextAlign.center,
@@ -308,11 +342,13 @@ class _QuizScreenState extends State<QuizScreen> {
                 fontWeight: FontWeight.w700,
               ),
             ),
+
             const SizedBox(height: 18),
 
-            // answer options
+            // Answer Options
             ...List.generate(_currentQuestion.options.length, (index) {
               final option = _currentQuestion.options[index];
+
               return AnswerOption(
                 text: option,
                 isSelected: index == _selectedOptionIndex,
@@ -350,19 +386,21 @@ class _QuizScreenState extends State<QuizScreen> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 10),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _nextQuestion,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.blue,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
                     ),
                   ),
                   child: const Text(
