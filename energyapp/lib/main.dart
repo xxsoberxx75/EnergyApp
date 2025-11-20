@@ -1,7 +1,8 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
-import 'theme/app_theme.dart';
-import 'features/quiz/screens/quiz_screen.dart';
+import 'dashboard_page.dart';
+import 'quiz.dart';
+// import 'pages/tips_page.dart';
 
 void main() {
   runApp(const EnergyApp());
@@ -13,10 +14,13 @@ class EnergyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Energy Awareness',
       debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
-      home: const QuizScreen(),
+      initialRoute: '/dashboard',
+      routes: {
+        '/dashboard': (context) => const DashboardPage(),
+        '/quiz': (context) => const QuizPage(),
+        // '/tips': (context) => const TipsPage(),
+      },
     );
   }
 }
