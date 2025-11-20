@@ -1,14 +1,15 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'dashboard_page.dart';
 import 'quiz.dart';
 // import 'pages/tips_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const EnergyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class EnergyApp extends StatelessWidget {
+  const EnergyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
