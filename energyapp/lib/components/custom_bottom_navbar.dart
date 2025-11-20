@@ -10,12 +10,15 @@ class CustomBottomNavBar extends StatelessWidget {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/dashboard');
+        Navigator.pushReplacementNamed(context, '/home');
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/quiz');
+        Navigator.pushReplacementNamed(context, '/dashboard');
         break;
       case 2:
+        Navigator.pushReplacementNamed(context, '/quiz');
+        break;
+      case 3:
         Navigator.pushReplacementNamed(context, '/tips');
         break;
     }
@@ -32,6 +35,7 @@ class CustomBottomNavBar extends StatelessWidget {
       selectedItemColor: primaryColor,
       unselectedItemColor: Colors.grey,
       items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(
           icon: Icon(Icons.dashboard),
           label: 'Dashboard',
