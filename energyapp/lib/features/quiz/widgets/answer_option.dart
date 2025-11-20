@@ -31,7 +31,7 @@ class AnswerOption extends StatelessWidget {
   }
 
   Color _borderColor() {
-    if (!showResult && isSelected) return const Color.fromRGBO(10, 65, 116, 1);
+    if (!showResult && isSelected) return AppColors.blue;
     if (showResult && isCorrect) return AppColors.correct;
     if (showResult && isSelected && !isCorrect) return AppColors.wrong;
     return AppColors.steel;
