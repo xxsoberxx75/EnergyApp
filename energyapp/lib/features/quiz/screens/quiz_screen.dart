@@ -34,14 +34,19 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _changeCategory(String category) {
-    setState(() {
-      _selectedCategory = category;
-      _currentQuestionIndex = 0;
-      _selectedOptionIndex = -1;
-      _showResult = false;
-      _score = 0;
-    });
-  }
+  setState(() {
+    _selectedCategory = category;
+
+    // ⭐ SHUFFLE QUESTIONS ONLY
+    quizData[_selectedCategory] = [...quizData[_selectedCategory]!]..shuffle();
+
+    _currentQuestionIndex = 0;
+    _selectedOptionIndex = -1;
+    _showResult = false;
+    _score = 0;
+  });
+}
+
 
   void _selectOption(int index) {
     if (_showResult) return;
