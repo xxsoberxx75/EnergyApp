@@ -1,7 +1,7 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'dashboard_page.dart';
-import 'quiz.dart';
+import 'features/quiz/screens/quiz_screen.dart';
 // import 'pages/tips_page.dart';
 
 void main() {
@@ -18,7 +18,7 @@ class EnergyApp extends StatelessWidget {
       initialRoute: '/dashboard',
       routes: {
         '/dashboard': (context) => const DashboardPage(),
-        '/quiz': (context) => const QuizPage(),
+        '/quiz': (context) => const QuizScreen(),
         // '/tips': (context) => const TipsPage(),
       },
     );

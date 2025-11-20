@@ -32,12 +32,7 @@ const Map<String, List<Question>> quizData = {
   'Energy': [
     Question(
       question: 'Which appliance usually uses the most electricity?',
-      options: [
-        'Phone charger',
-        'LED bulb',
-        'Air conditioner',
-        'Wi-Fi router',
-      ],
+      options: ['Phone charger', 'LED bulb', 'Air conditioner', 'Wi-Fi router'],
       correctIndex: 2,
       explanation:
           'Air conditioners consume a lot of power, especially with long nightly use.',

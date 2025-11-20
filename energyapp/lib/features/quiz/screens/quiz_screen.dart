@@ -1,4 +1,4 @@
-// lib/features/quiz/screens/quiz_screen.dart
+import 'package:energyapp/components/custom_bottom_navbar.dart';
 import 'package:flutter/material.dart';
 import '../../../theme/app_theme.dart';
 import '../data/quiz_data.dart';
@@ -19,6 +19,8 @@ class _QuizScreenState extends State<QuizScreen> {
   int _selectedOptionIndex = -1;
   bool _showResult = false;
   int _score = 0;
+  bool _scoreFlash = false;
+  Color _scoreFlashColor = Colors.transparent;
 
   List<String> get _categories => quizData.keys.toList();
   List<Question> get _questionsForCategory =>
@@ -44,12 +46,28 @@ class _QuizScreenState extends State<QuizScreen> {
   void _selectOption(int index) {
     if (_showResult) return;
 
+    final bool isCorrect = index == _currentQuestion.correctIndex;
+
     setState(() {
       _selectedOptionIndex = index;
       _showResult = true;
 
-      if (index == _currentQuestion.correctIndex) {
+      // Update score
+      if (isCorrect) {
         _score++;
+      }
+
+      // Trigger score flash animation
+      _scoreFlash = true;
+      _scoreFlashColor = isCorrect ? Colors.greenAccent : Colors.redAccent;
+    });
+
+    // Remove flash after short delay
+    Future.delayed(const Duration(milliseconds: 250), () {
+      if (mounted) {
+        setState(() {
+          _scoreFlash = false;
+        });
       }
     });
   }
@@ -88,11 +106,17 @@ class _QuizScreenState extends State<QuizScreen> {
               Navigator.pop(context);
               _changeCategory(_selectedCategory); // restart
             },
-            child: const Text('Retry', style: TextStyle(color: AppColors.white)),
+            child: const Text(
+              'Retry',
+              style: TextStyle(color: AppColors.white),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close', style: TextStyle(color: AppColors.white)),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: AppColors.white),
+            ),
           ),
         ],
       ),
@@ -119,7 +143,7 @@ class _QuizScreenState extends State<QuizScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header row
+                // HEADER
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -131,23 +155,47 @@ class _QuizScreenState extends State<QuizScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Container(
+
+                    // ⭐ REPLACEMENT GOES HERE ↓↓↓
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
-                        color: AppColors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
+                        color: _scoreFlash
+                            ? _scoreFlashColor.withOpacity(0.85)
+                            : AppColors.white.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(40),
+                        boxShadow: _scoreFlash
+                            ? [
+                                BoxShadow(
+                                  color: _scoreFlashColor.withOpacity(0.7),
+                                  blurRadius: 20,
+                                  spreadRadius: 3,
+                                ),
+                              ]
+                            : [],
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.star,
-                              color: Colors.amber, size: 20),
-                          const SizedBox(width: 4),
+                          AnimatedScale(
+                            duration: const Duration(milliseconds: 200),
+                            scale: _scoreFlash ? 1.5 : 1.0,
+                            child: const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                           Text(
                             'Score: $_score',
                             style: const TextStyle(
                               color: AppColors.white,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
@@ -158,7 +206,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
                 const SizedBox(height: 16),
 
-                // Category chips
+                // CATEGORY CHIPS
                 SizedBox(
                   height: 40,
                   child: ListView(
@@ -177,23 +225,27 @@ class _QuizScreenState extends State<QuizScreen> {
 
                 const SizedBox(height: 20),
 
-                // Question card
+                // QUESTION CARD
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: _buildQuestionCard(
-                      key: ValueKey('$_selectedCategory-$_currentQuestionIndex'),
+                      key: ValueKey(
+                        '$_selectedCategory-$_currentQuestionIndex',
+                      ),
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 12),
 
-                // Progress bar
+                // PROGRESS BAR
                 Text(
                   'Question ${_currentQuestionIndex + 1} of $total',
                   style: const TextStyle(
-                      color: AppColors.white, fontWeight: FontWeight.w500),
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 ClipRRect(
@@ -202,8 +254,9 @@ class _QuizScreenState extends State<QuizScreen> {
                     value: progress,
                     minHeight: 8,
                     backgroundColor: AppColors.white.withOpacity(0.2),
-                    valueColor:
-                        const AlwaysStoppedAnimation<Color>(AppColors.steel),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppColors.steel,
+                    ),
                   ),
                 ),
               ],
@@ -211,6 +264,9 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ),
       ),
+
+      // ⭐ THIS MUST BE INSIDE THE SCAFFOLD!
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 1),
     );
   }
 
@@ -230,83 +286,93 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ],
       ),
-      child: Column(
-        children: [
-          const Text('⚡', style: TextStyle(fontSize: 30)),
-          const SizedBox(height: 8),
-          Text(
-            _currentQuestion.question,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: AppColors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 18),
 
-          // answer options
-          ...List.generate(_currentQuestion.options.length, (index) {
-            final option = _currentQuestion.options[index];
-            return AnswerOption(
-              text: option,
-              isSelected: index == _selectedOptionIndex,
-              isCorrect: index == _currentQuestion.correctIndex,
-              showResult: _showResult,
-              onTap: () => _selectOption(index),
-            );
-          }),
-
-          const SizedBox(height: 14),
-
-          if (_showResult) ...[
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(16),
+      child: SingleChildScrollView(
+        // ⭐ FIX HERE
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('⚡', style: TextStyle(fontSize: 30)),
+            const SizedBox(height: 8),
+            Text(
+              _currentQuestion.question,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
               ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('💡  ', style: TextStyle(color: AppColors.white)),
-                  Expanded(
-                    child: Text(
-                      _currentQuestion.explanation,
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 14,
+            ),
+            const SizedBox(height: 18),
+
+            // answer options
+            ...List.generate(_currentQuestion.options.length, (index) {
+              final option = _currentQuestion.options[index];
+              return AnswerOption(
+                text: option,
+                isSelected: index == _selectedOptionIndex,
+                isCorrect: index == _currentQuestion.correctIndex,
+                showResult: _showResult,
+                onTap: () => _selectOption(index),
+              );
+            }),
+
+            const SizedBox(height: 14),
+
+            if (_showResult) ...[
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '💡  ',
+                      style: TextStyle(color: AppColors.white),
+                    ),
+                    Expanded(
+                      child: Text(
+                        _currentQuestion.explanation,
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _nextQuestion,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                child: const Text(
-                  'Next question',
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  ],
                 ),
               ),
-            ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _nextQuestion,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: const Text(
+                    'Next question',
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
