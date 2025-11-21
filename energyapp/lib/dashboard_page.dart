@@ -3,6 +3,7 @@ import '../components/custom_bottom_navbar.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -36,81 +37,99 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
 
-        // ************* FULL PAGE SCROLL FIX HERE *************
         body: SingleChildScrollView(
           child: Column(
             children: [
+              // ---------------------- FIRESTORE SUMMARY CARDS ----------------------
               Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    if (constraints.maxWidth > 600) {
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: _buildCard(
-                              title: "Active Outages in Mauritius",
-                              value: "4",
-                              icon: Icons.flash_on,
-                              color: Colors.red,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildCard(
-                              title: "Regions Affected",
-                              value: "Port Louis, Moka",
-                              icon: Icons.location_on,
-                              color: Colors.orange,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _buildCard(
-                              title: "Safety Tip of the Day",
-                              value: "Unplug electronics during a blackout.",
-                              icon: Icons.health_and_safety,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Column(
-                        children: [
-                          _buildCard(
-                            title: "Active Outages",
-                            value: "4",
-                            icon: Icons.flash_on,
-                            color: Colors.red,
-                          ),
-                          const SizedBox(height: 10),
-                          _buildCard(
-                            title: "Regions Affected",
-                            value: "Port Louis, Moka",
-                            icon: Icons.location_on,
-                            color: Colors.orange,
-                          ),
-                          const SizedBox(height: 10),
-                          _buildCard(
-                            title: "Safety Tip of the Day",
-                            value: "Unplug electronics during a blackout.",
-                            icon: Icons.health_and_safety,
-                            color: Colors.green,
-                          ),
-                        ],
-                      );
+                child: FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection("dashboard")
+                      .doc("summary")
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
                     }
+
+                    final data = snapshot.data!.data() as Map<String, dynamic>;
+
+                    final activeOutages = data["active_outages"].toString();
+                    final regions = (data["regions"] as List).join(", ");
+                    final safetyTip = data["safety_tip"];
+
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        if (constraints.maxWidth > 600) {
+                          return Row(
+                            children: [
+                              Expanded(
+                                child: _buildCard(
+                                  title: "Active Outages in Mauritius",
+                                  value: activeOutages,
+                                  icon: Icons.flash_on,
+                                  color: Colors.red,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _buildCard(
+                                  title: "Regions Affected",
+                                  value: regions,
+                                  icon: Icons.location_on,
+                                  color: Colors.orange,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _buildCard(
+                                  title: "Safety Tip of the Day",
+                                  value: safetyTip,
+                                  icon: Icons.health_and_safety,
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Column(
+                            children: [
+                              _buildCard(
+                                title: "Active Outages",
+                                value: activeOutages,
+                                icon: Icons.flash_on,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(height: 10),
+                              _buildCard(
+                                title: "Regions Affected",
+                                value: regions,
+                                icon: Icons.location_on,
+                                color: Colors.orange,
+                              ),
+                              const SizedBox(height: 10),
+                              _buildCard(
+                                title: "Safety Tip of the Day",
+                                value: safetyTip,
+                                icon: Icons.health_and_safety,
+                                color: Colors.green,
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                    );
                   },
                 ),
               ),
 
-              // ************* TAB CONTENT IS NOW SCROLLABLE *************
+              // ---------------------- TAB CONTENT ----------------------
               SizedBox(
                 height: MediaQuery.of(context).size.height * 1.5,
                 child: TabBarView(
                   children: [
-                    // CHARTS TAB
+                    // ---------------------- CHARTS TAB ----------------------
                     SingleChildScrollView(
                       padding: const EdgeInsets.all(12),
                       child: Column(
@@ -124,7 +143,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
 
-                    // MAP TAB
+                    // ---------------------- MAP TAB ----------------------
                     Center(
                       child: Container(
                         margin: const EdgeInsets.all(16),
@@ -204,8 +223,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ------------------- UI COMPONENTS BELOW (unchanged) -------------------
-
+  // ------------------- CARD UI -------------------
   Widget _buildCard({
     required String title,
     required String value,
